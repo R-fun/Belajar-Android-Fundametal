@@ -2,30 +2,69 @@ package com.latihan.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity(), View.OnClickListener {
+    private lateinit var edtWidth: EditText
+    private lateinit var edtHeight: EditText
+    private lateinit var edtLength: EditText
+    private lateinit var btnCalculate: Button
+    private lateinit var tvResult: TextView
+
+    companion object {
+        private const val STATE_RESULT = "state_result"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val ed_panjang: EditText = findViewById(R.id.ed_panjang)
-        val ed_lebar: EditText = findViewById(R.id.ed_lebar)
-        val ed_tinggi: EditText = findViewById(R.id.ed_tinggi)
-        val btn_hitung: Button = findViewById(R.id.btn_hitung)
-        val tv_hasil: TextView = findViewById(R.id.tv_hasil)
 
+        edtWidth = findViewById(R.id.ed_lebar)
+        edtHeight = findViewById(R.id.ed_tinggi)
+        edtLength = findViewById(R.id.ed_panjang)
+        btnCalculate = findViewById(R.id.btn_hitung)
+        tvResult = findViewById(R.id.tv_hasil)
 
+        btnCalculate.setOnClickListener(this)
 
-        btn_hitung.setOnClickListener {
-            val panjang = ed_panjang.text.toString()
-            val lebar = ed_lebar.text.toString()
-            val tinggi = ed_tinggi.text.toString()
+        if(savedInstanceState != null){
+            val result = savedInstanceState.getString(STATE_RESULT)
+            tvResult.text = result
+        }
 
-            val volume = panjang.toInt() + lebar.toInt() + tinggi.toInt()
-            tv_hasil.text = volume.toString()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(STATE_RESULT, tvResult.text.toString())
+    }
+
+    override fun onClick(v: View) {
+            val inputLength = edtLength.text.toString().trim()
+            val inputWidth = edtWidth.text.toString().trim()
+            val inputHeight = edtHeight.text.toString().trim()
+
+            var isEmptyField = false
+        if (inputHeight.isEmpty()){
+                isEmptyField = true
+                edtHeight.error = "tinggi tidak boleh kosong"
+            }
+        if (inputLength.isEmpty()){
+                isEmptyField = true
+                edtLength.error = "panjang tidak boleh kosong"
+            }
+        if (inputWidth.isEmpty()){
+                isEmptyField = true
+                edtWidth.error = "lebar tidak boleh kosong"
+            }
+
+        if(!isEmptyField){
+                val volume = inputLength.toDouble() * inputWidth.toDouble() * inputHeight.toDouble()
+                tvResult.text = volume.toString()
         }
     }
 }
